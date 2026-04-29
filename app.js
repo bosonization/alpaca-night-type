@@ -110,10 +110,10 @@ function termsView(){
   return `<section class="card center terms"><div class="alpaca">🦙📜</div><h2>利用規約への同意</h2><p class="lead">診断を始める前に、利用規約を確認してください。</p><div class="termsBox"><pre>${escapeHTML(TERMS_TEXT)}</pre></div><label class="agree"><input id="termsOK" type="checkbox" ${state.termsOK?'checked':''}>利用規約に同意します</label><button data-act="termsNext" ${state.termsOK?'':'disabled'}>同意して進む</button><button class="ghost" data-act="home">戻る</button></section>`;
 }
 function homeView(){
-  return `<section class="card hero"><div><div class="badge">✨ 飲み会でバレる</div><h1>夜の16タイプ診断</h1><p>アルパカと一緒に見つける、あなたの裏人格。ひとり診断で8桁の相性コードを発行し、ふたり診断ではコード同士で144パターン相性を見ます。</p><div class="actions"><button data-act="solo">💕 ひとりで診断する</button><button class="secondary" data-act="pair">👥 ふたりで相性診断する</button></div><p class="mini">※これはエンタメ用の16タイプ風診断です。</p></div><div><img src="alpaca-promo.png" alt="アルパカ夜診断"><div class="phone"><b>相性コード発行</b><strong>ENFP</strong><span>8桁コードで診断</span></div></div></section>`;
+  return `<section class="card hero"><div><div class="badge">✨ 飲み会でバレる</div><h1>夜の16タイプ診断</h1><p>アルパカと一緒に見つける、あなたの裏人格。ひとり診断で16タイプ風の結果と8桁の相性コードを発行し、ふたり診断ではコード同士で144パターン相性を見ます。</p><div class="actions"><button data-act="solo">💕 ひとりで診断する</button><button class="secondary" data-act="pair">👥 ふたりで相性診断する</button></div><p class="mini">※これはエンタメ用の16タイプ風診断です。</p></div><div><img src="alpaca-promo.png" alt="アルパカ夜診断"><div class="phone"><b>相性コード発行</b><strong>ENFP</strong><span>8桁コードで診断</span></div></div></section>`;
 }
 function gateView(){
-  return `<section class="card center"><div class="alpaca">🦙💕</div><h2>まずMBTI/16タイプを登録してね</h2><p class="lead">登録済みなら選ぶだけ。わからない人は、このあと${qs.length}問で夜タイプから仮判定して、8桁の相性コードを発行します。</p><div class="grid2 single">${mbtiSelect('aType','あなたのMBTI',state.aType)}</div><button data-act="gateNext">${state.aType?'診断結果を見る':`${qs.length}問で仮登録する`}</button><button class="ghost" data-act="home">戻る</button></section>`;
+  return `<section class="card center"><div class="alpaca">🦙💕</div><h2>12問で夜人格を診断します</h2><p class="lead">MBTI/16タイプの入力は不要です。${qs.length}問に答えると、16タイプ風の診断結果と、ふたり相性診断で使える8桁コードを発行します。</p><button data-act="gateNext">診断する</button><button class="ghost" data-act="home">戻る</button></section>`;
 }
 function codeInputView(){
   return `<section class="card center codeInput"><div class="alpaca">🦙🔐</div><h2>144パターンコードで相性診断</h2><p class="lead">ひとり診断の結果画面に出る<strong>8桁の相性コード</strong>を、あなたと相手それぞれ入力してください。ここではMBTI/16タイプは使いません。</p><div class="grid2"><label class="field"><span>あなたの8桁コード</span><input id="codeA" maxlength="8" value="${escapeAttr(state.codeA)}" placeholder="例：03ABC123"></label><label class="field"><span>相手の8桁コード</span><input id="codeB" maxlength="8" value="${escapeAttr(state.codeB)}" placeholder="例：1ZPAX999"></label></div>${state.codeError?`<div class="error">${state.codeError}</div>`:''}<div class="actions" style="justify-content:center"><button data-act="codeCompat">144パターンで相性診断する</button><button class="ghost" data-act="soloFromCode">コードを発行する</button><button class="ghost" data-act="home">戻る</button></div><p class="mini">コードを持っていない場合は「コードを発行する」から、ひとり診断をしてください。</p></section>`;
@@ -169,8 +169,10 @@ function act(a){
     if (!state.termsOK) return;
     state.mode = state.flow === 'pair' ? 'codeInput' : 'gate';
   } else if (a === 'gateNext') {
-    if (state.aType) state.mode = 'soloResult';
-    else { state.aAns = []; state.step = 0; state.mode = 'quiz'; }
+    state.aType = '';
+    state.aAns = [];
+    state.step = 0;
+    state.mode = 'quiz';
   } else if (a === 'soloFromCode') {
     state.flow = 'solo'; state.mode = 'gate'; state.aType = ''; state.aAns = []; state.step = 0; state.codeError = '';
   } else if (a === 'codeCompat') {
